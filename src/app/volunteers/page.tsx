@@ -1,4 +1,3 @@
-
 "use client";
 
 import { useState, useEffect } from "react";
@@ -126,7 +125,7 @@ export default function VolunteersPage() {
                       <SelectTrigger>
                         <SelectValue placeholder="Select role" />
                       </SelectTrigger>
-                      <SelectContent>
+                      <SelectContent side="bottom" sideOffset={4} position="popper">
                         {roles.map(role => (
                           <SelectItem key={role} value={role}>{role}</SelectItem>
                         ))}
