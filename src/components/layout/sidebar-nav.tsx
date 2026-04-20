@@ -50,11 +50,13 @@ export function SidebarNav() {
     <div className="space-y-4 py-4 flex flex-col h-full bg-white border-r">
       <div className="px-6 py-4 flex-1">
         <Link href="/" className="flex items-center mb-12">
-          <div className="w-10 h-10 bg-primary rounded-xl flex items-center justify-center mr-3 shadow-lg shadow-primary/20">
+          <div className="w-10 h-10 bg-primary rounded-xl flex items-center justify-center mr-3 shadow-lg shadow-primary/20 shrink-0">
             <Clock className="text-white w-6 h-6" />
           </div>
           <div>
-            <h1 className="text-2xl font-black text-primary font-headline leading-none tracking-tighter">PSN</h1>
+            <h1 className="text-lg font-black text-primary font-headline leading-tight tracking-tight">
+              Dalaw Nazareno<br/>Volunteers
+            </h1>
           </div>
         </Link>
         <div className="space-y-1">
@@ -102,7 +104,7 @@ export function MobileNav() {
           </SheetContent>
         </Sheet>
         <div className="ml-3">
-          <span className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest leading-none block">PSN</span>
+          <span className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest leading-none block">Dalaw Nazareno</span>
           <span className="text-lg font-black text-primary leading-none uppercase">{currentRoute?.label || "Dashboard"}</span>
         </div>
       </div>

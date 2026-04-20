@@ -46,7 +46,7 @@ export default function Dashboard() {
     <div className="space-y-6">
       <div className="space-y-1">
         <h2 className="text-2xl font-bold text-primary font-headline">Dashboard</h2>
-        <p className="text-sm text-muted-foreground">PSN Live Updates</p>
+        <p className="text-sm text-muted-foreground">Dalaw Nazareno Live Updates</p>
       </div>
 
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
