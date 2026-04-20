@@ -1,4 +1,3 @@
-
 "use client";
 
 import { useState, useEffect } from "react";
@@ -11,7 +10,7 @@ import {
   Tooltip,
   ResponsiveContainer
 } from "recharts";
-import { Download, FileText, Share2, TrendingUp } from "lucide-react";
+import { Download, FileText, TrendingUp } from "lucide-react";
 
 const roleData = [
   { name: "Safety & Security", value: 45 },
@@ -42,9 +41,6 @@ export default function ReportsPage() {
           <p className="text-muted-foreground">Detailed insights into PSN operations</p>
         </div>
         <div className="flex gap-2">
-          <Button variant="outline">
-            <Share2 className="mr-2 h-4 w-4" /> Share
-          </Button>
           <Button className="bg-primary">
             <Download className="mr-2 h-4 w-4" /> Export Report
           </Button>
@@ -160,7 +156,7 @@ export default function ReportsPage() {
           </div>
           <div className="mt-8 pt-6 border-t">
             <p className="text-sm text-muted-foreground">
-              PSN Analytics generated on {reportDate}. Data is refreshed every 5 minutes.
+              Analytics generated on {reportDate}. Data is refreshed every 5 minutes.
             </p>
           </div>
         </Card>
