@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useState, useEffect } from "react";
@@ -10,7 +11,6 @@ import {
   Download, 
   QrCode as QrIcon, 
   UserPlus,
-  MoreVertical,
   Mail,
   Phone
 } from "lucide-react";
@@ -42,6 +42,26 @@ import { Badge } from "@/components/ui/badge";
 import { mockVolunteers, Volunteer } from "@/lib/data";
 import { useToast } from "@/hooks/use-toast";
 
+const roles = [
+  "Responsible Official",
+  "Incident Commander",
+  "Planning Section Chief",
+  "Operations Section Chief",
+  "Finance and Admin Section Chief",
+  "Logistics and Facilities Section Chief",
+  "Secretariat",
+  "Documentation",
+  "Finance",
+  "Food & Services",
+  "Logistics & Facilities",
+  "Liturgy",
+  "Programs",
+  "Pilgrim Assistance",
+  "Safety & Security",
+  "Health & Emergency Response",
+  "Volunteer Management"
+];
+
 export default function VolunteersPage() {
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedVolunteer, setSelectedVolunteer] = useState<Volunteer | null>(null);
@@ -62,7 +82,6 @@ export default function VolunteersPage() {
     e.preventDefault();
     const formData = new FormData(e.currentTarget);
     
-    // In a real app, we'd add this to Firestore
     toast({
       title: "Volunteer Registered",
       description: `${formData.get('name')} has been successfully added to the roster.`,
@@ -75,7 +94,7 @@ export default function VolunteersPage() {
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
           <h2 className="text-3xl font-bold text-primary font-headline">Volunteer Roster</h2>
-          <p className="text-muted-foreground">Manage and identify event personnel</p>
+          <p className="text-muted-foreground">Manage and identify PSN personnel</p>
         </div>
         <div className="flex gap-2">
           <Button variant="outline" className="flex-1 sm:flex-none">
@@ -103,16 +122,14 @@ export default function VolunteersPage() {
                 <div className="grid grid-cols-2 gap-4">
                   <div className="space-y-2">
                     <Label htmlFor="role">Role</Label>
-                    <Select name="role" defaultValue="Support">
+                    <Select name="role" defaultValue="Safety & Security">
                       <SelectTrigger>
                         <SelectValue placeholder="Select role" />
                       </SelectTrigger>
                       <SelectContent>
-                        <SelectItem value="Security">Security</SelectItem>
-                        <SelectItem value="Medical">Medical</SelectItem>
-                        <SelectItem value="Crowd Control">Crowd Control</SelectItem>
-                        <SelectItem value="Logistics">Logistics</SelectItem>
-                        <SelectItem value="Support">Support</SelectItem>
+                        {roles.map(role => (
+                          <SelectItem key={role} value={role}>{role}</SelectItem>
+                        ))}
                       </SelectContent>
                     </Select>
                   </div>

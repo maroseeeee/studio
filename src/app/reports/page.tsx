@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useState, useEffect } from "react";
@@ -13,11 +14,11 @@ import {
 import { Download, FileText, Share2, TrendingUp } from "lucide-react";
 
 const roleData = [
-  { name: "Security", value: 45 },
-  { name: "Medical", value: 30 },
-  { name: "Logistics", value: 25 },
-  { name: "Media", value: 15 },
-  { name: "Support", value: 37 },
+  { name: "Safety & Security", value: 45 },
+  { name: "Health & Emergency Response", value: 30 },
+  { name: "Logistics & Facilities", value: 25 },
+  { name: "Incident Command", value: 15 },
+  { name: "Volunteer Management", value: 37 },
 ];
 
 const COLORS = ["#991b1b", "#dc2626", "#f87171", "#7f1d1d", "#ef4444"];
@@ -38,7 +39,7 @@ export default function ReportsPage() {
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
           <h2 className="text-3xl font-bold text-primary font-headline">Reporting & Analytics</h2>
-          <p className="text-muted-foreground">Detailed insights into volunteer operations</p>
+          <p className="text-muted-foreground">Detailed insights into PSN operations</p>
         </div>
         <div className="flex gap-2">
           <Button variant="outline">
@@ -87,7 +88,7 @@ export default function ReportsPage() {
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         <Card className="p-6 bg-card border-none shadow-sm">
           <CardHeader className="px-0 pt-0">
-            <CardTitle className="text-lg font-headline">Volunteer Distribution by Role</CardTitle>
+            <CardTitle className="text-lg font-headline">Volunteer Distribution by Section</CardTitle>
           </CardHeader>
           <div className="h-[350px] w-full mt-4">
             <ResponsiveContainer width="100%" height="100%">
@@ -122,7 +123,7 @@ export default function ReportsPage() {
           <div className="space-y-4 mt-6">
             <div className="space-y-2">
               <div className="flex justify-between text-sm">
-                <span>Security Deployment</span>
+                <span>Safety & Security Deployment</span>
                 <span className="font-bold">45 / 50</span>
               </div>
               <div className="w-full bg-secondary h-2 rounded-full overflow-hidden">
@@ -131,7 +132,7 @@ export default function ReportsPage() {
             </div>
             <div className="space-y-2">
               <div className="flex justify-between text-sm">
-                <span>Medical Station 1</span>
+                <span>Health & Emergency Station</span>
                 <span className="font-bold">12 / 12</span>
               </div>
               <div className="w-full bg-secondary h-2 rounded-full overflow-hidden">
@@ -140,7 +141,7 @@ export default function ReportsPage() {
             </div>
             <div className="space-y-2">
               <div className="flex justify-between text-sm">
-                <span>Crowd Control (Main Gate)</span>
+                <span>Pilgrim Assistance</span>
                 <span className="font-bold">28 / 40</span>
               </div>
               <div className="w-full bg-secondary h-2 rounded-full overflow-hidden">
@@ -149,7 +150,7 @@ export default function ReportsPage() {
             </div>
             <div className="space-y-2">
               <div className="flex justify-between text-sm">
-                <span>Media Team</span>
+                <span>Volunteer Management</span>
                 <span className="font-bold">8 / 15</span>
               </div>
               <div className="w-full bg-secondary h-2 rounded-full overflow-hidden">

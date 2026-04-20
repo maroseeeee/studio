@@ -24,7 +24,7 @@ export const mockVolunteers: Volunteer[] = [
     name: 'Juan Dela Cruz',
     email: 'juan@example.com',
     phone: '0917-123-4567',
-    role: 'Security',
+    role: 'Safety & Security',
     qrCode: 'VOL-1001',
   },
   {
@@ -32,7 +32,7 @@ export const mockVolunteers: Volunteer[] = [
     name: 'Maria Clara',
     email: 'maria@example.com',
     phone: '0918-765-4321',
-    role: 'Medical Team',
+    role: 'Health & Emergency Response',
     qrCode: 'VOL-1002',
   },
   {
@@ -40,7 +40,7 @@ export const mockVolunteers: Volunteer[] = [
     name: 'Jose Rizal',
     email: 'jose@example.com',
     phone: '0919-000-1111',
-    role: 'Crowd Control',
+    role: 'Operations Section Chief',
     qrCode: 'VOL-1003',
   },
 ];
