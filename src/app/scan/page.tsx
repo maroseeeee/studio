@@ -1,7 +1,7 @@
 
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -10,12 +10,12 @@ import {
   CheckCircle, 
   LogOut, 
   History, 
-  AlertCircle,
   X,
   Camera
 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
+import { Badge } from "@/components/ui/badge";
 
 export default function ScanningPage() {
   const [manualCode, setManualCode] = useState("");
@@ -24,7 +24,6 @@ export default function ScanningPage() {
   const { toast } = useToast();
 
   const handleScan = (code: string) => {
-    // Simulated logic
     const mockNames = ["Juan Dela Cruz", "Maria Clara", "Jose Rizal", "Andres Bonifacio"];
     const randomName = mockNames[Math.floor(Math.random() * mockNames.length)];
     const isCheckIn = Math.random() > 0.5;
@@ -67,7 +66,6 @@ export default function ScanningPage() {
             </div>
           ) : (
             <>
-              {/* Simulated camera view with scanning animation */}
               <div className="absolute inset-0 bg-slate-800 flex items-center justify-center opacity-50">
                  <Scan className="w-3/4 h-3/4 text-white animate-pulse" />
               </div>
@@ -144,7 +142,7 @@ export default function ScanningPage() {
                    <p className="font-medium text-sm">{scan.name}</p>
                    <p className="text-xs text-muted-foreground">{scan.time}</p>
                  </div>
-                 <Badge variant={scan.type === 'In' ? 'default' : 'secondary'} className={scan.type === 'In' ? 'bg-green-600' : ''}>
+                 <Badge variant={scan.type === 'In' ? 'default' : 'secondary'} className={scan.type === 'In' ? 'bg-green-600 hover:bg-green-700' : ''}>
                    {scan.type === 'In' ? <CheckCircle className="w-3 h-3 mr-1" /> : <LogOut className="w-3 h-3 mr-1" />}
                    Check {scan.type}
                  </Badge>
