@@ -12,6 +12,7 @@ import {
 } from "recharts";
 import { Download, FileText, TrendingUp } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+import Link from "next/link";
 
 const roleData = [
   { name: "Safety & Security", value: 45 },
@@ -50,14 +51,14 @@ export default function ReportsPage() {
       ].join("\n");
 
       const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
-      const url = URL.createObjectURL(blob);
+      const url = window.URL.createObjectURL(blob);
       const link = document.createElement("a");
       link.setAttribute("href", url);
       link.setAttribute("download", `distribution-report-${new Date().toISOString().split('T')[0]}.csv`);
       document.body.appendChild(link);
       link.click();
       document.body.removeChild(link);
-      URL.revokeObjectURL(url);
+      window.URL.revokeObjectURL(url);
 
       toast({
         title: "Export Successful",
@@ -153,8 +154,10 @@ export default function ReportsPage() {
         <Card className="p-6 bg-card border-none shadow-sm">
           <CardHeader className="px-0 pt-0 flex flex-row items-center justify-between">
             <CardTitle className="text-lg font-headline">Summary Data</CardTitle>
-            <Button variant="ghost" size="sm">
-              <FileText className="h-4 w-4 mr-2" /> Full Details
+            <Button variant="ghost" size="sm" asChild>
+              <Link href="/logs">
+                <FileText className="h-4 w-4 mr-2" /> Full Details
+              </Link>
             </Button>
           </CardHeader>
           <div className="space-y-4 mt-6">
