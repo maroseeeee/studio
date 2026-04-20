@@ -18,7 +18,9 @@ import {
   Filter, 
   Download, 
   Calendar as CalendarIcon,
-  X
+  X,
+  Clock,
+  User
 } from "lucide-react";
 import { mockAttendance } from "@/lib/data";
 import { Badge } from "@/components/ui/badge";
@@ -36,8 +38,8 @@ import { cn } from "@/lib/utils";
 export default function LogsPage() {
   const [searchTerm, setSearchTerm] = useState("");
   const [date, setDate] = useState<DateRange | undefined>({
-    from: new Date(2026, 2, 10), // March 10, 2026
-    to: new Date(2026, 2, 12),   // March 12, 2026
+    from: new Date(2026, 2, 9), // March 9, 2026
+    to: new Date(2026, 2, 15),   // March 15, 2026
   });
   const { toast } = useToast();
 
@@ -117,13 +119,13 @@ export default function LogsPage() {
     <div className="space-y-6">
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <h2 className="text-3xl font-bold text-primary font-headline uppercase">Attendance Logs</h2>
-          <p className="text-muted-foreground">History of activity for Dalaw Nazareno 2026</p>
+          <h2 className="text-2xl md:text-3xl font-bold text-primary font-headline uppercase">Attendance Logs</h2>
+          <p className="text-sm text-muted-foreground">History of activity for Dalaw Nazareno 2026</p>
         </div>
         <Button 
           variant="outline" 
           onClick={handleExport} 
-          className="border-primary text-primary hover:bg-primary/5 h-12 rounded-xl"
+          className="border-primary text-primary hover:bg-primary/5 h-12 rounded-xl w-full sm:w-auto"
         >
           <Download className="mr-2 h-4 w-4" /> Export CSV
         </Button>
@@ -136,7 +138,7 @@ export default function LogsPage() {
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
               <Input
                 placeholder="Search volunteer..."
-                className="pl-10 h-11 rounded-xl bg-background"
+                className="pl-10 h-11 rounded-xl bg-background border-none shadow-sm"
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
               />
@@ -155,7 +157,7 @@ export default function LogsPage() {
                   id="date"
                   variant={"outline"}
                   className={cn(
-                    "w-full md:w-[320px] justify-start text-left font-normal h-11 rounded-xl bg-background",
+                    "w-full md:w-[320px] justify-start text-left font-normal h-11 rounded-xl bg-background border-none shadow-sm",
                     !date && "text-muted-foreground"
                   )}
                 >
@@ -188,47 +190,82 @@ export default function LogsPage() {
           </div>
         </CardHeader>
         <CardContent className="p-0">
-          <Table>
-            <TableHeader className="bg-muted/30">
-              <TableRow className="hover:bg-transparent">
-                <TableHead className="font-bold text-xs uppercase tracking-wider">Volunteer</TableHead>
-                <TableHead className="font-bold text-xs uppercase tracking-wider">Date</TableHead>
-                <TableHead className="font-bold text-xs uppercase tracking-wider">Check-In</TableHead>
-                <TableHead className="font-bold text-xs uppercase tracking-wider">Check-Out</TableHead>
-                <TableHead className="font-bold text-xs uppercase tracking-wider">Duration</TableHead>
-                <TableHead className="text-right font-bold text-xs uppercase tracking-wider">Status</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {filteredLogs.map((log) => (
-                <TableRow key={log.id} className="hover:bg-primary/5 transition-colors group">
-                  <TableCell className="font-bold text-primary">{log.volunteerName}</TableCell>
-                  <TableCell className="text-muted-foreground">{format(parseISO(log.date), "MMM dd, yyyy")}</TableCell>
-                  <TableCell className="text-red-600 font-bold">{log.checkIn}</TableCell>
-                  <TableCell className="text-red-800 font-bold">{log.checkOut || "—"}</TableCell>
-                  <TableCell className="font-medium">{log.duration || "Active"}</TableCell>
-                  <TableCell className="text-right">
-                    <Badge variant={log.checkOut ? "secondary" : "default"} className={cn("rounded-md uppercase text-[10px] font-black tracking-widest px-2", !log.checkOut ? "bg-primary animate-pulse" : "")}>
-                      {log.checkOut ? "Closed" : "Active"}
-                    </Badge>
-                  </TableCell>
+          {/* Mobile View: Cards */}
+          <div className="md:hidden divide-y">
+            {filteredLogs.map((log) => (
+              <div key={log.id} className="p-4 space-y-3 bg-card active:bg-muted/50 transition-colors">
+                <div className="flex justify-between items-start">
+                  <div className="space-y-1">
+                    <p className="font-bold text-primary flex items-center gap-1">
+                      <User className="h-3 w-3" /> {log.volunteerName}
+                    </p>
+                    <p className="text-xs text-muted-foreground">{format(parseISO(log.date), "MMM dd, yyyy")}</p>
+                  </div>
+                  <Badge variant={log.checkOut ? "secondary" : "default"} className={cn("rounded-md uppercase text-[9px] font-black tracking-widest", !log.checkOut ? "bg-primary animate-pulse" : "")}>
+                    {log.checkOut ? "Closed" : "Active"}
+                  </Badge>
+                </div>
+                <div className="grid grid-cols-2 gap-2 text-xs">
+                  <div className="bg-muted/30 p-2 rounded-lg">
+                    <p className="text-muted-foreground mb-1 uppercase text-[8px] font-bold">Check-In</p>
+                    <p className="text-red-600 font-bold flex items-center gap-1">
+                      <Clock className="h-3 w-3" /> {log.checkIn}
+                    </p>
+                  </div>
+                  <div className="bg-muted/30 p-2 rounded-lg">
+                    <p className="text-muted-foreground mb-1 uppercase text-[8px] font-bold">Check-Out</p>
+                    <p className="text-red-800 font-bold flex items-center gap-1">
+                      <Clock className="h-3 w-3" /> {log.checkOut || "—"}
+                    </p>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+
+          {/* Desktop View: Table */}
+          <div className="hidden md:block">
+            <Table>
+              <TableHeader className="bg-muted/30">
+                <TableRow className="hover:bg-transparent">
+                  <TableHead className="font-bold text-xs uppercase tracking-wider">Volunteer</TableHead>
+                  <TableHead className="font-bold text-xs uppercase tracking-wider">Date</TableHead>
+                  <TableHead className="font-bold text-xs uppercase tracking-wider">Check-In</TableHead>
+                  <TableHead className="font-bold text-xs uppercase tracking-wider">Check-Out</TableHead>
+                  <TableHead className="font-bold text-xs uppercase tracking-wider">Duration</TableHead>
+                  <TableHead className="text-right font-bold text-xs uppercase tracking-wider">Status</TableHead>
                 </TableRow>
-              ))}
-              {filteredLogs.length === 0 && (
-                <TableRow>
-                  <TableCell colSpan={6} className="text-center py-24 text-muted-foreground bg-muted/5">
-                    <div className="flex flex-col items-center gap-3">
-                      <div className="h-12 w-12 rounded-full bg-muted flex items-center justify-center">
-                        <Filter className="h-6 w-6 opacity-30" />
-                      </div>
-                      <p className="font-medium">No activity records match your filters</p>
-                      <Button variant="link" onClick={clearFilters} className="text-primary font-bold">Clear all filters</Button>
-                    </div>
-                  </TableCell>
-                </TableRow>
-              )}
-            </TableBody>
-          </Table>
+              </TableHeader>
+              <TableBody>
+                {filteredLogs.map((log) => (
+                  <TableRow key={log.id} className="hover:bg-primary/5 transition-colors group">
+                    <TableCell className="font-bold text-primary">{log.volunteerName}</TableCell>
+                    <TableCell className="text-muted-foreground">{format(parseISO(log.date), "MMM dd, yyyy")}</TableCell>
+                    <TableCell className="text-red-600 font-bold">{log.checkIn}</TableCell>
+                    <TableCell className="text-red-800 font-bold">{log.checkOut || "—"}</TableCell>
+                    <TableCell className="font-medium">{log.duration || "Active"}</TableCell>
+                    <TableCell className="text-right">
+                      <Badge variant={log.checkOut ? "secondary" : "default"} className={cn("rounded-md uppercase text-[10px] font-black tracking-widest px-2", !log.checkOut ? "bg-primary animate-pulse" : "")}>
+                        {log.checkOut ? "Closed" : "Active"}
+                      </Badge>
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          </div>
+
+          {filteredLogs.length === 0 && (
+            <div className="text-center py-24 text-muted-foreground bg-muted/5">
+              <div className="flex flex-col items-center gap-3">
+                <div className="h-12 w-12 rounded-full bg-muted flex items-center justify-center">
+                  <Filter className="h-6 w-6 opacity-30" />
+                </div>
+                <p className="font-medium">No activity records match your filters</p>
+                <Button variant="link" onClick={clearFilters} className="text-primary font-bold">Clear all filters</Button>
+              </div>
+            </div>
+          )}
         </CardContent>
       </Card>
     </div>

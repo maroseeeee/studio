@@ -50,15 +50,15 @@ export default function Dashboard() {
         <p className="text-sm text-muted-foreground">Dalaw Nazareno 2026 Real-time Overview</p>
       </div>
 
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 md:gap-4">
         {stats.map((stat) => (
           <Card key={stat.label} className="border-none shadow-sm bg-card hover:bg-primary/5 transition-colors group">
             <CardHeader className="flex flex-row items-center justify-between pb-1 pt-4 px-4">
               <CardTitle className="text-[10px] uppercase tracking-wider font-bold text-muted-foreground group-hover:text-primary transition-colors">{stat.label}</CardTitle>
-              <stat.icon className={`h-3 w-3 ${stat.color}`} />
+              <stat.icon className={`h-3 w-3 md:h-4 md:w-4 ${stat.color}`} />
             </CardHeader>
             <CardContent className="px-4 pb-4">
-              <div className="text-xl font-bold text-primary">{stat.value}</div>
+              <div className="text-xl md:text-2xl font-bold text-primary">{stat.value}</div>
             </CardContent>
           </Card>
         ))}
@@ -68,7 +68,7 @@ export default function Dashboard() {
         <CardHeader className="px-0 pt-0 pb-4">
           <CardTitle className="text-sm font-headline uppercase tracking-widest text-muted-foreground">Volunteer Turnout (Event Week)</CardTitle>
         </CardHeader>
-        <div className="h-[250px] w-full">
+        <div className="h-[250px] md:h-[300px] w-full">
           <ResponsiveContainer width="100%" height="100%">
             <BarChart data={data}>
               <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f0f0f0" />
@@ -78,6 +78,8 @@ export default function Dashboard() {
                 axisLine={false} 
                 tickLine={false}
                 tick={{ fill: 'hsl(var(--muted-foreground))' }}
+                interval={0}
+                tickFormatter={(value) => value.split(' ')[1]} // Show only date on mobile
               />
               <YAxis 
                 fontSize={10} 
@@ -105,7 +107,8 @@ export default function Dashboard() {
           <CardTitle className="text-sm font-headline uppercase tracking-widest text-muted-foreground">Recent Check-ins</CardTitle>
         </CardHeader>
         <div className="space-y-4">
-          <div className="text-center py-8 text-muted-foreground text-sm">
+          <div className="text-center py-12 text-muted-foreground text-sm flex flex-col items-center gap-2">
+            <CheckCircle2 className="h-8 w-8 opacity-10" />
             No recent check-ins recorded
           </div>
         </div>
