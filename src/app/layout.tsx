@@ -4,8 +4,8 @@ import { SidebarNav, MobileNav } from "@/components/layout/sidebar-nav";
 import { Toaster } from "@/components/ui/toaster";
 
 export const metadata: Metadata = {
-  title: "DalawScan - QR Attendance",
-  description: "Attendance monitoring system for Dalaw Nazareno 2026",
+  title: "PSN - QR Attendance",
+  description: "Attendance monitoring system for PSN",
 };
 
 export default function RootLayout({

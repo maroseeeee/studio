@@ -1,7 +1,7 @@
 "use client";
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Users, QrCode, Clock, CheckCircle2, TrendingUp } from "lucide-react";
+import { Users, QrCode, Clock, CheckCircle2 } from "lucide-react";
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from "recharts";
 
 const stats = [
@@ -46,7 +46,7 @@ export default function Dashboard() {
     <div className="space-y-6">
       <div className="space-y-1">
         <h2 className="text-2xl font-bold text-primary font-headline">Dashboard</h2>
-        <p className="text-sm text-muted-foreground">Dalaw Nazareno 2026 Live Updates</p>
+        <p className="text-sm text-muted-foreground">PSN Live Updates</p>
       </div>
 
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">

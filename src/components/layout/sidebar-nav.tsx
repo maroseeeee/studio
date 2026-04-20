@@ -54,8 +54,7 @@ export function SidebarNav() {
             <Clock className="text-white w-6 h-6" />
           </div>
           <div>
-            <h1 className="text-xl font-black text-primary font-headline leading-none">DALAW</h1>
-            <span className="text-[10px] font-bold text-muted-foreground tracking-[0.2em] uppercase">Scan 2026</span>
+            <h1 className="text-2xl font-black text-primary font-headline leading-none tracking-tighter">PSN</h1>
           </div>
         </Link>
         <div className="space-y-1">
@@ -103,7 +102,7 @@ export function MobileNav() {
           </SheetContent>
         </Sheet>
         <div className="ml-3">
-          <span className="text-xs font-bold text-muted-foreground uppercase tracking-widest leading-none block">DalawScan</span>
+          <span className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest leading-none block">PSN</span>
           <span className="text-lg font-black text-primary leading-none uppercase">{currentRoute?.label || "Dashboard"}</span>
         </div>
       </div>

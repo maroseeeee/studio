@@ -159,7 +159,7 @@ export default function ReportsPage() {
           </div>
           <div className="mt-8 pt-6 border-t">
             <p className="text-sm text-muted-foreground">
-              DalawScan Analytics generated on {reportDate}. Data is refreshed every 5 minutes.
+              PSN Analytics generated on {reportDate}. Data is refreshed every 5 minutes.
             </p>
           </div>
         </Card>
