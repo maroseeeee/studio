@@ -1,3 +1,4 @@
+
 "use client";
 
 import Link from "next/link";
@@ -54,7 +55,7 @@ export function SidebarNav() {
             <Clock className="text-white w-6 h-6" />
           </div>
           <div>
-            <h1 className="text-lg font-black text-primary font-headline leading-tight tracking-tight">
+            <h1 className="text-lg font-black text-primary font-headline leading-none tracking-tighter">
               Dalaw Nazareno<br/>Volunteers
             </h1>
           </div>
@@ -104,7 +105,7 @@ export function MobileNav() {
           </SheetContent>
         </Sheet>
         <div className="ml-3">
-          <span className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest leading-none block">Dalaw Nazareno</span>
+          <span className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest leading-none block">System</span>
           <span className="text-lg font-black text-primary leading-none uppercase">{currentRoute?.label || "Dashboard"}</span>
         </div>
       </div>

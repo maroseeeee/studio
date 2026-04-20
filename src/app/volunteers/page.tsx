@@ -12,7 +12,8 @@ import {
   QrCode as QrIcon, 
   UserPlus,
   Mail,
-  Phone
+  Phone,
+  Printer
 } from "lucide-react";
 import {
   Dialog,
@@ -70,7 +71,9 @@ export default function VolunteersPage() {
   const { toast } = useToast();
 
   useEffect(() => {
-    setQrPattern(Array.from({ length: 64 }, () => Math.random() > 0.5));
+    if (selectedVolunteer) {
+      setQrPattern(Array.from({ length: 64 }, () => Math.random() > 0.5));
+    }
   }, [selectedVolunteer]);
 
   const filteredVolunteers = mockVolunteers.filter(v => 
@@ -97,14 +100,14 @@ export default function VolunteersPage() {
     ].join("\n");
 
     const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
-    const link = document.createElement("a");
     const url = URL.createObjectURL(blob);
-    link.setAttribute("href", url);
-    link.setAttribute("download", `volunteer-roster-${new Date().toISOString().split('T')[0]}.csv`);
-    link.style.visibility = 'hidden';
+    const link = document.createElement("a");
+    link.href = url;
+    link.download = `volunteer-roster-${new Date().toISOString().split('T')[0]}.csv`;
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
+    URL.revokeObjectURL(url);
     
     toast({
       title: "Export Successful",
@@ -115,10 +118,11 @@ export default function VolunteersPage() {
   const handleRegisterSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     const formData = new FormData(e.currentTarget);
+    const name = formData.get('name');
     
     toast({
       title: "Volunteer Registered",
-      description: `${formData.get('name')} has been successfully added to the roster.`,
+      description: `${name} has been successfully added to the roster.`,
     });
     setIsRegisterOpen(false);
   };
@@ -160,7 +164,7 @@ export default function VolunteersPage() {
                       <SelectTrigger>
                         <SelectValue placeholder="Select role" />
                       </SelectTrigger>
-                      <SelectContent side="bottom" sideOffset={12} position="popper" className="z-[100] max-h-[300px]">
+                      <SelectContent side="bottom" sideOffset={12} className="z-[100] max-h-[300px]">
                         {roles.map(role => (
                           <SelectItem key={role} value={role}>{role}</SelectItem>
                         ))}
@@ -200,7 +204,11 @@ export default function VolunteersPage() {
         <CardContent className="p-0">
           <div className="md:hidden space-y-px bg-border">
             {filteredVolunteers.map((vol) => (
-              <div key={vol.id} className="bg-card p-4 flex items-center justify-between active:bg-muted/50 transition-colors" onClick={() => setSelectedVolunteer(vol)}>
+              <div 
+                key={vol.id} 
+                className="bg-card p-4 flex items-center justify-between active:bg-muted/50 transition-colors cursor-pointer" 
+                onClick={() => setSelectedVolunteer(vol)}
+              >
                 <div className="space-y-1">
                   <p className="font-bold text-primary">{vol.name}</p>
                   <div className="flex items-center gap-2">
@@ -208,7 +216,14 @@ export default function VolunteersPage() {
                     <span className="text-[10px] font-mono text-muted-foreground">{vol.qrCode}</span>
                   </div>
                 </div>
-                <Button variant="ghost" size="icon">
+                <Button 
+                  variant="ghost" 
+                  size="icon" 
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    setSelectedVolunteer(vol);
+                  }}
+                >
                   <QrIcon className="h-5 w-5 text-accent" />
                 </Button>
               </div>
@@ -228,7 +243,11 @@ export default function VolunteersPage() {
               </TableHeader>
               <TableBody>
                 {filteredVolunteers.map((vol) => (
-                  <TableRow key={vol.id} className="group cursor-pointer" onClick={() => setSelectedVolunteer(vol)}>
+                  <TableRow 
+                    key={vol.id} 
+                    className="group cursor-pointer" 
+                    onClick={() => setSelectedVolunteer(vol)}
+                  >
                     <TableCell className="font-medium text-primary">{vol.name}</TableCell>
                     <TableCell>
                       <Badge variant="secondary" className="font-semibold">{vol.role}</Badge>
@@ -241,7 +260,15 @@ export default function VolunteersPage() {
                     </TableCell>
                     <TableCell className="font-mono text-xs font-bold">{vol.qrCode}</TableCell>
                     <TableCell className="text-right">
-                      <Button variant="ghost" size="icon" className="group-hover:text-primary">
+                      <Button 
+                        variant="ghost" 
+                        size="icon" 
+                        className="group-hover:text-primary"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          setSelectedVolunteer(vol);
+                        }}
+                      >
                         <QrIcon className="h-4 w-4" />
                       </Button>
                     </TableCell>
@@ -284,7 +311,7 @@ export default function VolunteersPage() {
               {selectedVolunteer?.qrCode}
             </Badge>
             <p className="text-xs font-bold text-muted-foreground uppercase tracking-tighter mt-2">
-              Assigned Role: {selectedVolunteer?.role}
+              Role: {selectedVolunteer?.role}
             </p>
           </div>
           <DialogFooter className="w-full sm:justify-center gap-2">
@@ -292,7 +319,7 @@ export default function VolunteersPage() {
               <Download className="mr-2 h-4 w-4" /> Save ID
             </Button>
             <Button className="flex-1 h-12 rounded-xl bg-primary hover:bg-primary/90">
-              Print Badge
+              <Printer className="mr-2 h-4 w-4" /> Print Badge
             </Button>
           </DialogFooter>
         </DialogContent>

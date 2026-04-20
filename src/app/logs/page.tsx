@@ -52,14 +52,14 @@ export default function LogsPage() {
     ].join("\n");
 
     const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
-    const link = document.createElement("a");
     const url = URL.createObjectURL(blob);
-    link.setAttribute("href", url);
-    link.setAttribute("download", `attendance-logs-${new Date().toISOString().split('T')[0]}.csv`);
-    link.style.visibility = 'hidden';
+    const link = document.createElement("a");
+    link.href = url;
+    link.download = `attendance-logs-${new Date().toISOString().split('T')[0]}.csv`;
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
+    URL.revokeObjectURL(url);
     
     toast({
       title: "Export Successful",
@@ -118,11 +118,11 @@ export default function LogsPage() {
                   <TableRow key={log.id}>
                     <TableCell className="font-medium">{log.volunteerName}</TableCell>
                     <TableCell>{log.date}</TableCell>
-                    <TableCell className="text-green-600 font-medium">{log.checkIn}</TableCell>
-                    <TableCell className="text-orange-600 font-medium">{log.checkOut || "—"}</TableCell>
+                    <TableCell className="text-red-600 font-medium">{log.checkIn}</TableCell>
+                    <TableCell className="text-red-800 font-medium">{log.checkOut || "—"}</TableCell>
                     <TableCell>{log.duration || "Active"}</TableCell>
                     <TableCell className="text-right">
-                      <Badge variant={log.checkOut ? "secondary" : "default"}>
+                      <Badge variant={log.checkOut ? "secondary" : "default"} className={!log.checkOut ? "bg-primary" : ""}>
                         {log.checkOut ? "Completed" : "On Duty"}
                       </Badge>
                     </TableCell>
