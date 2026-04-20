@@ -125,7 +125,7 @@ export default function VolunteersPage() {
                       <SelectTrigger>
                         <SelectValue placeholder="Select role" />
                       </SelectTrigger>
-                      <SelectContent side="bottom" sideOffset={4} position="popper">
+                      <SelectContent side="bottom" sideOffset={12} position="popper" className="z-[100]">
                         {roles.map(role => (
                           <SelectItem key={role} value={role}>{role}</SelectItem>
                         ))}
