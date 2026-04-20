@@ -11,6 +11,7 @@ import {
   ResponsiveContainer
 } from "recharts";
 import { Download, FileText, TrendingUp } from "lucide-react";
+import { useToast } from "@/hooks/use-toast";
 
 const roleData = [
   { name: "Safety & Security", value: 45 },
@@ -25,11 +26,51 @@ const COLORS = ["#991b1b", "#dc2626", "#f87171", "#7f1d1d", "#ef4444"];
 export default function ReportsPage() {
   const [mounted, setMounted] = useState(false);
   const [reportDate, setReportDate] = useState("");
+  const { toast } = useToast();
 
   useEffect(() => {
     setMounted(true);
     setReportDate(new Date().toLocaleDateString());
   }, []);
+
+  const handleExport = () => {
+    try {
+      const headers = ["Section", "Count", "Percentage"];
+      const total = roleData.reduce((acc, curr) => acc + curr.value, 0);
+      
+      const rows = roleData.map(item => [
+        item.name,
+        item.value,
+        `${((item.value / total) * 100).toFixed(1)}%`
+      ]);
+
+      const csvContent = [
+        headers.join(","),
+        ...rows.map(r => r.join(","))
+      ].join("\n");
+
+      const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement("a");
+      link.setAttribute("href", url);
+      link.setAttribute("download", `distribution-report-${new Date().toISOString().split('T')[0]}.csv`);
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      URL.revokeObjectURL(url);
+
+      toast({
+        title: "Export Successful",
+        description: "The distribution report has been downloaded.",
+      });
+    } catch (error) {
+      toast({
+        variant: "destructive",
+        title: "Export Failed",
+        description: "Could not generate the CSV file.",
+      });
+    }
+  };
 
   if (!mounted) return null;
 
@@ -38,10 +79,10 @@ export default function ReportsPage() {
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
           <h2 className="text-3xl font-bold text-primary font-headline">Reporting & Analytics</h2>
-          <p className="text-muted-foreground">Detailed insights into PSN operations</p>
+          <p className="text-muted-foreground">Detailed insights into Volunteer operations</p>
         </div>
         <div className="flex gap-2">
-          <Button className="bg-primary">
+          <Button className="bg-primary" onClick={handleExport}>
             <Download className="mr-2 h-4 w-4" /> Export Report
           </Button>
         </div>
