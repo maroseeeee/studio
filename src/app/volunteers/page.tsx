@@ -186,7 +186,7 @@ export default function VolunteersPage() {
                 </div>
                 <div className="space-y-2">
                   <Label htmlFor="serialNumber">Serial Number</Label>
-                  <Input id="serialNumber" name="serialNumber" placeholder="e.g. VOL-1001" required className="h-11" />
+                  <Input id="serialNumber" name="serialNumber" placeholder="e.g. STN-0000" required className="h-11" />
                 </div>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div className="space-y-2">
