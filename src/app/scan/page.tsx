@@ -42,14 +42,21 @@ export default function ScanningPage() {
     }
     if (requestRef.current) {
       cancelAnimationFrame(requestRef.current);
+      requestRef.current = null;
     }
   };
 
   const startScanner = async () => {
     try {
-      const stream = await navigator.mediaDevices.getUserMedia({ 
-        video: { facingMode: "environment", width: { ideal: 1280 }, height: { ideal: 720 } } 
-      });
+      const constraints = {
+        video: { 
+          facingMode: "environment",
+          width: { ideal: 1280 },
+          height: { ideal: 720 }
+        }
+      };
+      
+      const stream = await navigator.mediaDevices.getUserMedia(constraints);
       
       setHasCameraPermission(true);
       streamRef.current = stream;
@@ -57,8 +64,8 @@ export default function ScanningPage() {
 
       if (videoRef.current) {
         videoRef.current.srcObject = stream;
-        videoRef.current.setAttribute("playsinline", "true");
-        videoRef.current.play();
+        videoRef.current.setAttribute("playsinline", "true"); // required to tell iOS safari we don't want fullscreen
+        await videoRef.current.play();
         requestRef.current = requestAnimationFrame(scanFrame);
       }
     } catch (error) {
@@ -67,18 +74,18 @@ export default function ScanningPage() {
       toast({
         variant: 'destructive',
         title: 'Camera Access Denied',
-        description: 'Please enable camera permissions in your browser settings to use this app.',
+        description: 'Please enable camera permissions in your browser settings to use the scanner.',
       });
       setIsScanning(false);
     }
   };
 
   const scanFrame = () => {
-    if (!videoRef.current || !canvasRef.current || !isScanning) return;
+    if (!videoRef.current || !canvasRef.current || !isScanning || isProcessing) return;
 
     if (videoRef.current.readyState === videoRef.current.HAVE_ENOUGH_DATA) {
       const canvas = canvasRef.current;
-      const context = canvas.getContext("2d");
+      const context = canvas.getContext("2d", { willReadFrequently: true });
       
       if (context) {
         canvas.height = videoRef.current.videoHeight;
@@ -90,16 +97,14 @@ export default function ScanningPage() {
           inversionAttempts: "dontInvert",
         });
 
-        if (code && !isProcessing) {
+        if (code) {
           processScan(code.data);
-          return;
+          return; // Stop the loop
         }
       }
     }
     
-    if (isScanning) {
-      requestRef.current = requestAnimationFrame(scanFrame);
-    }
+    requestRef.current = requestAnimationFrame(scanFrame);
   };
 
   const processScan = (code: string) => {
@@ -107,10 +112,11 @@ export default function ScanningPage() {
     stopScanner();
 
     // Mock processing logic
+    // In a real app, we would search for the volunteer with this serial number
     const isCheckIn = Math.random() > 0.5;
     
     const scanResult = {
-      name: "Volunteer User",
+      name: `STN Volunteer (${code})`,
       type: isCheckIn ? 'In' as const : 'Out' as const,
       time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
     };
@@ -118,7 +124,7 @@ export default function ScanningPage() {
     setLastScan(scanResult);
     toast({
       title: `Scan Successful: Check-${scanResult.type}`,
-      description: `${scanResult.name} recorded successfully.`,
+      description: `Verified serial: ${code}`,
     });
     
     setManualCode("");
@@ -134,14 +140,7 @@ export default function ScanningPage() {
   };
 
   useEffect(() => {
-    return () => {
-      if (streamRef.current) {
-        streamRef.current.getTracks().forEach(track => track.stop());
-      }
-      if (requestRef.current) {
-        cancelAnimationFrame(requestRef.current);
-      }
-    };
+    return () => stopScanner();
   }, []);
 
   return (
