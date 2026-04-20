@@ -77,6 +77,31 @@ export default function VolunteersPage() {
     v.role.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
+  const handleExport = () => {
+    const headers = ["ID", "Name", "Email", "Phone", "Role", "QR Code"];
+    const csvContent = [
+      headers.join(","),
+      ...filteredVolunteers.map(v => 
+        [v.id, `"${v.name}"`, v.email, v.phone, `"${v.role}"`, v.qrCode].join(",")
+      )
+    ].join("\n");
+
+    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+    const link = document.createElement("a");
+    const url = URL.createObjectURL(blob);
+    link.setAttribute("href", url);
+    link.setAttribute("download", "volunteers.csv");
+    link.style.visibility = 'hidden';
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    
+    toast({
+      title: "Export Successful",
+      description: "Volunteer roster has been downloaded as CSV.",
+    });
+  };
+
   const handleRegisterSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     const formData = new FormData(e.currentTarget);
@@ -96,7 +121,7 @@ export default function VolunteersPage() {
           <p className="text-muted-foreground">Manage and identify PSN personnel</p>
         </div>
         <div className="flex gap-2">
-          <Button variant="outline" className="flex-1 sm:flex-none">
+          <Button variant="outline" className="flex-1 sm:flex-none" onClick={handleExport}>
             <Download className="mr-2 h-4 w-4" /> Export
           </Button>
           
