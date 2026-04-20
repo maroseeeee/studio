@@ -16,7 +16,7 @@ import {
   Loader2
 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
-import { Alert, AlertDescription, AlertTitle } from "@/alert";
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Badge } from "@/components/ui/badge";
 import jsQR from "jsqr";
 
@@ -57,7 +57,7 @@ export default function ScanningPage() {
 
       if (videoRef.current) {
         videoRef.current.srcObject = stream;
-        videoRef.current.setAttribute("playsinline", "true"); // required to tell iOS safari we don't want fullscreen
+        videoRef.current.setAttribute("playsinline", "true");
         videoRef.current.play();
         requestRef.current = requestAnimationFrame(scanFrame);
       }
@@ -92,7 +92,7 @@ export default function ScanningPage() {
 
         if (code && !isProcessing) {
           processScan(code.data);
-          return; // Stop scanning once found
+          return;
         }
       }
     }
@@ -106,13 +106,12 @@ export default function ScanningPage() {
     setIsProcessing(true);
     stopScanner();
 
-    // Mock processing logic
-    const mockNames = ["Juan Dela Cruz", "Maria Clara", "Jose Rizal", "Andres Bonifacio"];
-    const randomName = mockNames[Math.floor(Math.random() * mockNames.length)];
+    // Mock processing logic for a clean state environment
+    // In a real app, this would query a database for the code
     const isCheckIn = Math.random() > 0.5;
     
     const scanResult = {
-      name: randomName,
+      name: "Volunteer User",
       type: isCheckIn ? 'In' as const : 'Out' as const,
       time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
     };
@@ -125,7 +124,6 @@ export default function ScanningPage() {
     
     setManualCode("");
     
-    // Auto-restart scanner after a brief delay if user wants more scans
     setTimeout(() => {
       setIsProcessing(false);
     }, 2000);
@@ -136,7 +134,6 @@ export default function ScanningPage() {
     processScan(manualCode);
   };
 
-  // Cleanup on unmount
   useEffect(() => {
     return () => {
       if (streamRef.current) {
@@ -192,7 +189,6 @@ export default function ScanningPage() {
               <div className="absolute inset-0 pointer-events-none flex items-center justify-center">
                 <div className="w-64 h-64 border-2 border-primary/50 rounded-2xl relative">
                   <div className="absolute inset-x-0 top-1/2 -translate-y-1/2 h-0.5 bg-primary shadow-[0_0_15px_hsl(var(--primary))] animate-pulse"></div>
-                  {/* Scanning Corners */}
                   <div className="absolute -top-1 -left-1 w-8 h-8 border-t-4 border-l-4 border-primary rounded-tl-xl"></div>
                   <div className="absolute -top-1 -right-1 w-8 h-8 border-t-4 border-r-4 border-primary rounded-tr-xl"></div>
                   <div className="absolute -bottom-1 -left-1 w-8 h-8 border-b-4 border-l-4 border-primary rounded-bl-xl"></div>
