@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useState, useRef, useEffect } from "react";
@@ -11,68 +12,100 @@ import {
   History, 
   X,
   Camera,
-  AlertCircle
+  AlertCircle,
+  Loader2
 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
-import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
+import { Alert, AlertDescription, AlertTitle } from "@/alert";
 import { Badge } from "@/components/ui/badge";
+import jsQR from "jsqr";
 
 export default function ScanningPage() {
   const [manualCode, setManualCode] = useState("");
   const [isScanning, setIsScanning] = useState(false);
   const [hasCameraPermission, setHasCameraPermission] = useState<boolean | null>(null);
   const [lastScan, setLastScan] = useState<{name: string, type: 'In' | 'Out', time: string} | null>(null);
+  const [isProcessing, setIsProcessing] = useState(false);
+  
   const videoRef = useRef<HTMLVideoElement>(null);
+  const canvasRef = useRef<HTMLCanvasElement>(null);
   const streamRef = useRef<MediaStream | null>(null);
+  const requestRef = useRef<number>(null);
+  
   const { toast } = useToast();
 
-  useEffect(() => {
-    const getCameraPermission = async () => {
-      if (!isScanning) {
-        if (streamRef.current) {
-          streamRef.current.getTracks().forEach(track => track.stop());
-          streamRef.current = null;
-        }
-        return;
-      }
+  const stopScanner = () => {
+    setIsScanning(false);
+    if (streamRef.current) {
+      streamRef.current.getTracks().forEach(track => track.stop());
+      streamRef.current = null;
+    }
+    if (requestRef.current) {
+      cancelAnimationFrame(requestRef.current);
+    }
+  };
 
-      try {
-        const stream = await navigator.mediaDevices.getUserMedia({ 
-          video: { facingMode: "environment" } 
+  const startScanner = async () => {
+    try {
+      const stream = await navigator.mediaDevices.getUserMedia({ 
+        video: { facingMode: "environment", width: { ideal: 1280 }, height: { ideal: 720 } } 
+      });
+      
+      setHasCameraPermission(true);
+      streamRef.current = stream;
+      setIsScanning(true);
+
+      if (videoRef.current) {
+        videoRef.current.srcObject = stream;
+        videoRef.current.setAttribute("playsinline", "true"); // required to tell iOS safari we don't want fullscreen
+        videoRef.current.play();
+        requestRef.current = requestAnimationFrame(scanFrame);
+      }
+    } catch (error) {
+      console.error('Error accessing camera:', error);
+      setHasCameraPermission(false);
+      toast({
+        variant: 'destructive',
+        title: 'Camera Access Denied',
+        description: 'Please enable camera permissions in your browser settings to use this app.',
+      });
+      setIsScanning(false);
+    }
+  };
+
+  const scanFrame = () => {
+    if (!videoRef.current || !canvasRef.current || !isScanning) return;
+
+    if (videoRef.current.readyState === videoRef.current.HAVE_ENOUGH_DATA) {
+      const canvas = canvasRef.current;
+      const context = canvas.getContext("2d");
+      
+      if (context) {
+        canvas.height = videoRef.current.videoHeight;
+        canvas.width = videoRef.current.videoWidth;
+        context.drawImage(videoRef.current, 0, 0, canvas.width, canvas.height);
+        
+        const imageData = context.getImageData(0, 0, canvas.width, canvas.height);
+        const code = jsQR(imageData.data, imageData.width, imageData.height, {
+          inversionAttempts: "dontInvert",
         });
-        setHasCameraPermission(true);
-        streamRef.current = stream;
 
-        if (videoRef.current) {
-          videoRef.current.srcObject = stream;
+        if (code && !isProcessing) {
+          processScan(code.data);
+          return; // Stop scanning once found
         }
-      } catch (error) {
-        console.error('Error accessing camera:', error);
-        setHasCameraPermission(false);
-        toast({
-          variant: 'destructive',
-          title: 'Camera Access Denied',
-          description: 'Please enable camera permissions in your browser settings to use this app.',
-        });
-        setIsScanning(false);
       }
-    };
-
-    getCameraPermission();
-
-    return () => {
-      if (streamRef.current) {
-        streamRef.current.getTracks().forEach(track => track.stop());
-      }
-    };
-  }, [isScanning, toast]);
-
-  const handleManualEntry = () => {
-    if (!manualCode) return;
-    processScan(manualCode);
+    }
+    
+    if (isScanning) {
+      requestRef.current = requestAnimationFrame(scanFrame);
+    }
   };
 
   const processScan = (code: string) => {
+    setIsProcessing(true);
+    stopScanner();
+
     // Mock processing logic
     const mockNames = ["Juan Dela Cruz", "Maria Clara", "Jose Rizal", "Andres Bonifacio"];
     const randomName = mockNames[Math.floor(Math.random() * mockNames.length)];
@@ -87,27 +120,49 @@ export default function ScanningPage() {
     setLastScan(scanResult);
     toast({
       title: `Scan Successful: Check-${scanResult.type}`,
-      description: `${scanResult.name} recorded successfully.`,
+      description: `${scanResult.name} (${code}) recorded successfully.`,
     });
+    
     setManualCode("");
+    
+    // Auto-restart scanner after a brief delay if user wants more scans
+    setTimeout(() => {
+      setIsProcessing(false);
+    }, 2000);
   };
+
+  const handleManualEntry = () => {
+    if (!manualCode) return;
+    processScan(manualCode);
+  };
+
+  // Cleanup on unmount
+  useEffect(() => {
+    return () => {
+      if (streamRef.current) {
+        streamRef.current.getTracks().forEach(track => track.stop());
+      }
+      if (requestRef.current) {
+        cancelAnimationFrame(requestRef.current);
+      }
+    };
+  }, []);
 
   return (
     <div className="max-w-md mx-auto space-y-6 flex flex-col min-h-[calc(100vh-8rem)]">
       <div className="text-center space-y-1">
-        <h2 className="text-2xl font-bold text-primary font-headline">Scanner</h2>
-        <p className="text-sm text-muted-foreground">Scan QR codes for check-in/out</p>
+        <h2 className="text-2xl font-bold text-primary font-headline uppercase tracking-tight">Scanner</h2>
+        <p className="text-sm text-muted-foreground">Active monitoring for Dalaw Nazareno 2026</p>
       </div>
 
       <Card className="overflow-hidden border-none shadow-xl bg-card flex-1 flex flex-col">
-        <div className="aspect-square bg-black flex flex-col items-center justify-center relative overflow-hidden">
+        <div className="aspect-square bg-black flex flex-col items-center justify-center relative overflow-hidden rounded-t-xl">
           <video 
             ref={videoRef} 
             className={`w-full h-full object-cover ${isScanning ? 'block' : 'hidden'}`} 
-            autoPlay 
-            muted 
             playsInline
           />
+          <canvas ref={canvasRef} className="hidden" />
           
           {!isScanning && (
             <div className="text-center space-y-4 p-8">
@@ -116,10 +171,18 @@ export default function ScanningPage() {
               </div>
               <Button 
                 size="lg" 
-                className="bg-primary hover:bg-primary/90 text-white w-full h-12 text-lg rounded-xl"
-                onClick={() => setIsScanning(true)}
+                className="bg-primary hover:bg-primary/90 text-white w-full h-12 text-lg rounded-xl shadow-lg shadow-primary/20"
+                onClick={startScanner}
+                disabled={isProcessing}
               >
-                Launch Scanner
+                {isProcessing ? (
+                  <>
+                    <Loader2 className="mr-2 h-5 w-5 animate-spin" />
+                    Processing...
+                  </>
+                ) : (
+                  "Launch Scanner"
+                )}
               </Button>
             </div>
           )}
@@ -139,13 +202,13 @@ export default function ScanningPage() {
               <Button 
                 variant="destructive" 
                 size="icon" 
-                className="absolute top-4 right-4 z-10 rounded-full h-10 w-10"
-                onClick={() => setIsScanning(false)}
+                className="absolute top-4 right-4 z-10 rounded-full h-10 w-10 shadow-lg"
+                onClick={stopScanner}
               >
                 <X className="h-5 w-5" />
               </Button>
-              <div className="absolute bottom-8 left-1/2 -translate-x-1/2 text-white font-medium text-xs bg-black/70 px-6 py-2 rounded-full backdrop-blur-md z-10 whitespace-nowrap">
-                Focus on QR code
+              <div className="absolute bottom-8 left-1/2 -translate-x-1/2 text-white font-black text-[10px] uppercase tracking-widest bg-black/70 px-6 py-2 rounded-full backdrop-blur-md z-10 whitespace-nowrap">
+                Align QR Code within Frame
               </div>
             </>
           )}
@@ -178,13 +241,14 @@ export default function ScanningPage() {
               <Input 
                 placeholder="ID (e.g. VOL-1001)" 
                 value={manualCode}
-                className="h-12 text-lg"
+                className="h-12 text-lg rounded-xl"
                 onChange={(e) => setManualCode(e.target.value)}
+                onKeyPress={(e) => e.key === 'Enter' && handleManualEntry()}
               />
               <Button 
-                className="bg-primary h-12 px-6" 
+                className="bg-primary hover:bg-primary/90 h-12 px-6 rounded-xl" 
                 onClick={handleManualEntry}
-                disabled={!manualCode}
+                disabled={!manualCode || isProcessing}
               >
                 Verify
               </Button>
@@ -194,38 +258,39 @@ export default function ScanningPage() {
       </Card>
 
       {lastScan && (
-        <Alert className="bg-primary/5 border-primary/20 animate-in slide-in-from-bottom-2 duration-300">
+        <Alert className="bg-primary/5 border-primary/20 animate-in slide-in-from-bottom-2 duration-300 rounded-xl">
           <CheckCircle className="h-4 w-4 text-primary" />
-          <AlertTitle className="text-primary font-bold">Confirmed</AlertTitle>
-          <AlertDescription className="text-foreground/80">
+          <AlertTitle className="text-primary font-black uppercase tracking-tight text-xs">Scan Confirmed</AlertTitle>
+          <AlertDescription className="text-foreground/80 font-medium">
             <strong>{lastScan.name}</strong> • Check-{lastScan.type} • {lastScan.time}
           </AlertDescription>
         </Alert>
       )}
 
-      <Card className="border-none shadow-sm overflow-hidden">
-        <CardHeader className="py-4">
-          <CardTitle className="text-sm flex items-center gap-2 font-headline uppercase tracking-wider text-muted-foreground">
-            <History className="h-4 w-4" />
+      <Card className="border-none shadow-sm overflow-hidden bg-card">
+        <CardHeader className="py-4 border-b bg-muted/20">
+          <CardTitle className="text-[10px] flex items-center gap-2 font-bold uppercase tracking-widest text-muted-foreground">
+            <History className="h-3 w-3" />
             Recent Activity
           </CardTitle>
         </CardHeader>
         <CardContent className="px-0 pb-2">
           <div className="divide-y">
-             {[
-               { name: "Andres Bonifacio", type: "In", time: "10:45 AM" },
-               { name: "Jose Rizal", type: "Out", time: "10:30 AM" }
-             ].map((scan, i) => (
-               <div key={i} className="flex items-center justify-between px-6 py-4 hover:bg-muted/30 transition">
+             {lastScan ? (
+               <div className="flex items-center justify-between px-6 py-4 hover:bg-muted/30 transition">
                  <div className="space-y-0.5">
-                   <p className="font-semibold text-sm">{scan.name}</p>
-                   <p className="text-[10px] text-muted-foreground">{scan.time}</p>
+                   <p className="font-bold text-sm text-primary">{lastScan.name}</p>
+                   <p className="text-[10px] text-muted-foreground font-medium uppercase">{lastScan.time}</p>
                  </div>
-                 <Badge variant={scan.type === 'In' ? 'default' : 'secondary'} className={`rounded-md px-2 py-0.5 text-[10px] uppercase ${scan.type === 'In' ? 'bg-primary' : ''}`}>
-                   {scan.type === 'In' ? 'Check In' : 'Check Out'}
+                 <Badge variant={lastScan.type === 'In' ? 'default' : 'secondary'} className={`rounded-md px-2 py-0.5 text-[10px] uppercase font-black tracking-widest ${lastScan.type === 'In' ? 'bg-primary' : ''}`}>
+                   {lastScan.type === 'In' ? 'Check In' : 'Check Out'}
                  </Badge>
                </div>
-             ))}
+             ) : (
+               <div className="text-center py-8 text-muted-foreground text-xs italic">
+                 No activity logged in this session
+               </div>
+             )}
           </div>
         </CardContent>
       </Card>
