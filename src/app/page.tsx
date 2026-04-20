@@ -8,39 +8,38 @@ import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContaine
 const stats = [
   {
     label: "Volunteers",
-    value: "152",
+    value: "0",
     icon: Users,
     color: "text-primary",
   },
   {
     label: "Active Now",
-    value: "45",
+    value: "0",
     icon: CheckCircle2,
     color: "text-primary",
   },
   {
     label: "Avg Hours",
-    value: "6.5h",
+    value: "0h",
     icon: Clock,
     color: "text-primary",
   },
   {
     label: "Active Zones",
-    value: "8",
+    value: "0",
     icon: QrCode,
     color: "text-primary",
   },
 ];
 
-// March 10, 2026 is a Tuesday
 const data = [
-  { name: "Mar 09 (Mon)", count: 40 },
-  { name: "Mar 10 (Tue)", count: 85 },
-  { name: "Mar 11 (Wed)", count: 120 },
-  { name: "Mar 12 (Thu)", count: 110 },
-  { name: "Mar 13 (Fri)", count: 70 },
-  { name: "Mar 14 (Sat)", count: 45 },
-  { name: "Mar 15 (Sun)", count: 30 },
+  { name: "Mar 09 (Mon)", count: 0 },
+  { name: "Mar 10 (Tue)", count: 0 },
+  { name: "Mar 11 (Wed)", count: 0 },
+  { name: "Mar 12 (Thu)", count: 0 },
+  { name: "Mar 13 (Fri)", count: 0 },
+  { name: "Mar 14 (Sat)", count: 0 },
+  { name: "Mar 15 (Sun)", count: 0 },
 ];
 
 export default function Dashboard() {
@@ -106,23 +105,9 @@ export default function Dashboard() {
           <CardTitle className="text-sm font-headline uppercase tracking-widest text-muted-foreground">Recent Check-ins</CardTitle>
         </CardHeader>
         <div className="space-y-4">
-          {[
-            { id: 1024, name: "Juan Dela Cruz", time: "10:15 AM", gate: "North Gate" },
-            { id: 1025, name: "Maria Clara", time: "10:18 AM", gate: "East Gate" },
-            { id: 1026, name: "Jose Rizal", time: "10:22 AM", gate: "Main Entrance" },
-            { id: 1027, name: "Andres Bonifacio", time: "10:25 AM", gate: "Plaza" }
-          ].map((entry) => (
-            <div key={entry.id} className="flex items-center gap-4 text-sm border-b pb-3 last:border-0 last:pb-0">
-              <div className="h-10 w-10 rounded-xl bg-primary/5 flex items-center justify-center shrink-0">
-                <Clock className="h-5 w-5 text-primary" />
-              </div>
-              <div className="flex-1 min-w-0">
-                <p className="font-semibold text-sm truncate">{entry.name}</p>
-                <p className="text-muted-foreground text-[10px]">Today at {entry.time}</p>
-              </div>
-              <div className="text-[10px] font-bold text-primary uppercase bg-primary/5 px-2 py-1 rounded-md">{entry.gate}</div>
-            </div>
-          ))}
+          <div className="text-center py-8 text-muted-foreground text-sm">
+            No recent check-ins recorded
+          </div>
         </div>
       </Card>
     </div>
