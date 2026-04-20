@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useState, useEffect } from "react";
@@ -78,6 +79,15 @@ export default function VolunteersPage() {
   );
 
   const handleExport = () => {
+    if (filteredVolunteers.length === 0) {
+      toast({
+        variant: "destructive",
+        title: "No data to export",
+        description: "There are no volunteers matching your search.",
+      });
+      return;
+    }
+
     const headers = ["ID", "Name", "Email", "Phone", "Role", "QR Code"];
     const csvContent = [
       headers.join(","),
@@ -90,7 +100,7 @@ export default function VolunteersPage() {
     const link = document.createElement("a");
     const url = URL.createObjectURL(blob);
     link.setAttribute("href", url);
-    link.setAttribute("download", "volunteers.csv");
+    link.setAttribute("download", `volunteer-roster-${new Date().toISOString().split('T')[0]}.csv`);
     link.style.visibility = 'hidden';
     document.body.appendChild(link);
     link.click();
@@ -118,7 +128,7 @@ export default function VolunteersPage() {
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
           <h2 className="text-3xl font-bold text-primary font-headline">Volunteer Roster</h2>
-          <p className="text-muted-foreground">Manage and identify PSN personnel</p>
+          <p className="text-muted-foreground">Manage and identify personnel</p>
         </div>
         <div className="flex gap-2">
           <Button variant="outline" className="flex-1 sm:flex-none" onClick={handleExport}>
@@ -150,7 +160,7 @@ export default function VolunteersPage() {
                       <SelectTrigger>
                         <SelectValue placeholder="Select role" />
                       </SelectTrigger>
-                      <SelectContent side="bottom" sideOffset={12} position="popper" className="z-[100]">
+                      <SelectContent side="bottom" sideOffset={12} position="popper" className="z-[100] max-h-[300px]">
                         {roles.map(role => (
                           <SelectItem key={role} value={role}>{role}</SelectItem>
                         ))}

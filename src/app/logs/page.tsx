@@ -16,13 +16,56 @@ import {
 import { Search, Filter, Download, Calendar as CalendarIcon } from "lucide-react";
 import { mockAttendance } from "@/lib/data";
 import { Badge } from "@/components/ui/badge";
+import { useToast } from "@/hooks/use-toast";
 
 export default function LogsPage() {
   const [searchTerm, setSearchTerm] = useState("");
+  const { toast } = useToast();
 
   const filteredLogs = mockAttendance.filter(log => 
     log.volunteerName.toLowerCase().includes(searchTerm.toLowerCase())
   );
+
+  const handleExport = () => {
+    if (filteredLogs.length === 0) {
+      toast({
+        variant: "destructive",
+        title: "No data to export",
+        description: "There are no logs matching your current filters.",
+      });
+      return;
+    }
+
+    const headers = ["ID", "Volunteer Name", "Date", "Check-In", "Check-Out", "Duration"];
+    const csvContent = [
+      headers.join(","),
+      ...filteredLogs.map(log => 
+        [
+          log.id, 
+          `"${log.volunteerName}"`, 
+          log.date, 
+          log.checkIn, 
+          log.checkOut || "Active", 
+          log.duration || "N/A"
+        ].join(",")
+      )
+    ].join("\n");
+
+    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+    const link = document.createElement("a");
+    const url = URL.createObjectURL(blob);
+    link.setAttribute("href", url);
+    link.setAttribute("download", `attendance-logs-${new Date().toISOString().split('T')[0]}.csv`);
+    link.style.visibility = 'hidden';
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    
+    toast({
+      title: "Export Successful",
+      description: "Attendance logs have been downloaded as CSV.",
+    });
+  };
 
   return (
     <div className="space-y-6">
@@ -31,7 +74,7 @@ export default function LogsPage() {
           <h2 className="text-3xl font-bold text-primary font-headline">Attendance Logs</h2>
           <p className="text-muted-foreground">Full history of volunteer activity</p>
         </div>
-        <Button variant="outline">
+        <Button variant="outline" onClick={handleExport}>
           <Download className="mr-2 h-4 w-4" /> Export CSV
         </Button>
       </div>
@@ -75,8 +118,8 @@ export default function LogsPage() {
                   <TableRow key={log.id}>
                     <TableCell className="font-medium">{log.volunteerName}</TableCell>
                     <TableCell>{log.date}</TableCell>
-                    <TableCell className="text-green-600">{log.checkIn}</TableCell>
-                    <TableCell className="text-orange-600">{log.checkOut || "—"}</TableCell>
+                    <TableCell className="text-green-600 font-medium">{log.checkIn}</TableCell>
+                    <TableCell className="text-orange-600 font-medium">{log.checkOut || "—"}</TableCell>
                     <TableCell>{log.duration || "Active"}</TableCell>
                     <TableCell className="text-right">
                       <Badge variant={log.checkOut ? "secondary" : "default"}>
