@@ -1,4 +1,3 @@
-
 import type { Metadata } from "next";
 import "./globals.css";
 import { SidebarNav, MobileNav } from "@/components/layout/sidebar-nav";
@@ -25,13 +24,13 @@ export default function RootLayout({
         />
       </head>
       <body className="font-body antialiased bg-background" suppressHydrationWarning>
-        <div className="h-full relative">
+        <div className="h-full relative flex flex-col md:flex-row">
           <div className="hidden h-full md:flex md:w-72 md:flex-col md:fixed md:inset-y-0 z-[80]">
             <SidebarNav />
           </div>
-          <main className="md:pl-72 h-full">
+          <main className="flex-1 md:pl-72 min-h-screen">
             <MobileNav />
-            <div className="p-4 md:p-8 max-w-7xl mx-auto">
+            <div className="p-4 md:p-8 max-w-7xl mx-auto pb-20 md:pb-8">
               {children}
             </div>
           </main>
