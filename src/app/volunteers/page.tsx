@@ -80,7 +80,8 @@ export default function VolunteersPage() {
 
   const filteredVolunteers = volunteers.filter(v => 
     v.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    v.role.toLowerCase().includes(searchTerm.toLowerCase())
+    v.role.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    v.qrCode.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
   const handleExport = () => {
@@ -94,7 +95,7 @@ export default function VolunteersPage() {
     }
 
     try {
-      const headers = ["ID", "Name", "Email", "Phone", "Role", "QR Code"];
+      const headers = ["ID", "Name", "Email", "Phone", "Role", "Serial Number"];
       const csvContent = [
         headers.join(","),
         ...filteredVolunteers.map(v => 
@@ -132,6 +133,7 @@ export default function VolunteersPage() {
     const role = formData.get('role') as string;
     const email = formData.get('email') as string;
     const phone = formData.get('phone') as string;
+    const serialNumber = formData.get('serialNumber') as string;
     
     const newId = Math.random().toString(36).substring(2, 9);
     const newVolunteer: Volunteer = {
@@ -140,7 +142,7 @@ export default function VolunteersPage() {
       role,
       email,
       phone,
-      qrCode: `VOL-${1000 + volunteers.length + 1}`
+      qrCode: serialNumber
     };
 
     setVolunteers(prev => [newVolunteer, ...prev]);
@@ -174,13 +176,17 @@ export default function VolunteersPage() {
               <DialogHeader>
                 <DialogTitle className="text-xl font-headline text-primary">Register Volunteer</DialogTitle>
                 <DialogDescription>
-                  Enter details for the new volunteer. A unique ID will be auto-generated.
+                  Enter details for the new volunteer. Use a unique serial number for tracking.
                 </DialogDescription>
               </DialogHeader>
               <form onSubmit={handleRegisterSubmit} className="space-y-4 py-4">
                 <div className="space-y-2">
                   <Label htmlFor="name">Full Name</Label>
                   <Input id="name" name="name" placeholder="e.g. Juan Luna" required className="h-11" />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="serialNumber">Serial Number</Label>
+                  <Input id="serialNumber" name="serialNumber" placeholder="e.g. VOL-1001" required className="h-11" />
                 </div>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div className="space-y-2">
@@ -219,7 +225,7 @@ export default function VolunteersPage() {
           <div className="relative w-full">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
             <Input
-              placeholder="Search by name or role..."
+              placeholder="Search by name, role, or serial..."
               className="pl-10 h-12 bg-muted/30 border-none rounded-xl"
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
@@ -263,7 +269,7 @@ export default function VolunteersPage() {
                   <TableHead className="w-[250px] font-bold text-xs uppercase tracking-wider">Volunteer</TableHead>
                   <TableHead className="font-bold text-xs uppercase tracking-wider">Role</TableHead>
                   <TableHead className="font-bold text-xs uppercase tracking-wider">Contact Info</TableHead>
-                  <TableHead className="font-bold text-xs uppercase tracking-wider">ID Code</TableHead>
+                  <TableHead className="font-bold text-xs uppercase tracking-wider">Serial Number</TableHead>
                   <TableHead className="text-right font-bold text-xs uppercase tracking-wider">Action</TableHead>
                 </TableRow>
               </TableHeader>
