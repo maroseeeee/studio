@@ -1,4 +1,3 @@
-
 "use client";
 
 import Link from "next/link";
@@ -44,38 +43,44 @@ const routes = [
   },
 ];
 
-export function SidebarNav() {
+export function SidebarNav({ forceShow = false }: { forceShow?: boolean }) {
   const pathname = usePathname();
 
   return (
-    <div className="space-y-4 py-4 flex flex-col h-full bg-white border-r">
-      <div className="px-6 py-4 flex-1">
-        <Link href="/" className="flex items-center mb-12">
-          <div className="w-10 h-10 bg-primary rounded-xl flex items-center justify-center mr-3 shadow-lg shadow-primary/20 shrink-0">
+    <div className="flex flex-col h-full bg-white overflow-hidden">
+      <div className="px-5 py-6 flex-1">
+        <Link href="/" className="flex items-center mb-10 overflow-hidden">
+          <div className="w-10 h-10 bg-primary rounded-xl flex items-center justify-center shadow-lg shadow-primary/20 shrink-0">
             <Clock className="text-white w-6 h-6" />
           </div>
-          <div>
-            <h1 className="text-lg font-black text-primary font-headline leading-none tracking-tighter">
+          <div className={cn(
+            "ml-4 transition-all duration-300 whitespace-nowrap",
+            forceShow ? "opacity-100" : "opacity-0 group-hover/sidebar:opacity-100"
+          )}>
+            <h1 className="text-sm font-black text-primary font-headline leading-none tracking-tighter">
               Dalaw Nazareno<br/>Volunteers
             </h1>
           </div>
         </Link>
-        <div className="space-y-1">
+        <div className="space-y-2">
           {routes.map((route) => (
             <Link
               key={route.href}
               href={route.href}
               className={cn(
-                "text-sm group flex p-3 w-full justify-start font-semibold rounded-xl transition-all duration-200",
+                "group relative flex items-center p-3 w-full font-semibold rounded-xl transition-all duration-200",
                 pathname === route.href 
                   ? "bg-primary text-white shadow-md shadow-primary/10" 
                   : "text-muted-foreground hover:bg-primary/5 hover:text-primary"
               )}
             >
-              <div className="flex items-center flex-1">
-                <route.icon className={cn("h-5 w-5 mr-3")} />
+              <route.icon className={cn("h-5 w-5 shrink-0")} />
+              <span className={cn(
+                "ml-4 transition-all duration-300 whitespace-nowrap",
+                forceShow ? "opacity-100" : "opacity-0 group-hover/sidebar:opacity-100"
+              )}>
                 {route.label}
-              </div>
+              </span>
             </Link>
           ))}
         </div>
@@ -101,7 +106,7 @@ export function MobileNav() {
             <SheetHeader className="sr-only">
                <SheetTitle>Navigation Menu</SheetTitle>
             </SheetHeader>
-            <SidebarNav />
+            <SidebarNav forceShow={true} />
           </SheetContent>
         </Sheet>
         <div className="ml-3">
