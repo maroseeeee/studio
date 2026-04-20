@@ -235,7 +235,7 @@ export default function ScanningPage() {
             
             <div className="flex gap-2">
               <Input 
-                placeholder="ID (e.g. VOL-1001)" 
+                placeholder="Serial Number (e.g. VOL-1001)" 
                 value={manualCode}
                 className="h-12 text-lg rounded-xl"
                 onChange={(e) => setManualCode(e.target.value)}
