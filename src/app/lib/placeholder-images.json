@@ -1,0 +1,17 @@
+
+{
+  "placeholderImages": [
+    {
+      "id": "hero-bg",
+      "description": "Devotional event background",
+      "imageUrl": "https://picsum.photos/seed/dalaw1/1200/800",
+      "imageHint": "church community"
+    },
+    {
+      "id": "volunteer-avatar",
+      "description": "Volunteer profile placeholder",
+      "imageUrl": "https://picsum.photos/seed/v1/200/200",
+      "imageHint": "person portrait"
+    }
+  ]
+}
