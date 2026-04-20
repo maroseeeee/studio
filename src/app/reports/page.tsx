@@ -1,4 +1,3 @@
-
 "use client";
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -25,7 +24,7 @@ const roleData = [
   { name: "Support", value: 37 },
 ];
 
-const COLORS = ["#8C3B67", "#D033B6", "#A22F55", "#6B2A4E", "#E87FC1"];
+const COLORS = ["#991b1b", "#dc2626", "#f87171", "#7f1d1d", "#ef4444"];
 
 export default function ReportsPage() {
   return (
