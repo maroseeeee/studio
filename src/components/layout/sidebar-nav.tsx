@@ -10,7 +10,6 @@ import {
   QrCode,
   ClipboardList,
   BarChart3,
-  MessageSquare,
   Clock,
   Menu,
 } from "lucide-react";
@@ -46,12 +45,6 @@ const routes = [
     label: "Reports",
     icon: BarChart3,
     href: "/reports",
-    color: "text-primary",
-  },
-  {
-    label: "AI Communication",
-    icon: MessageSquare,
-    href: "/communication",
     color: "text-primary",
   },
 ];

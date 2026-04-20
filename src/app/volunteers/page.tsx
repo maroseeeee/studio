@@ -5,15 +5,10 @@ import { useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 import { 
-  Plus, 
   Search, 
   Download, 
-  MoreVertical, 
-  UserPlus, 
-  QrCode as QrIcon,
-  X
+  QrCode as QrIcon 
 } from "lucide-react";
 import {
   Dialog,
@@ -22,7 +17,6 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
-  DialogTrigger,
 } from "@/components/ui/dialog";
 import {
   Table,
@@ -36,76 +30,24 @@ import { Badge } from "@/components/ui/badge";
 import { mockVolunteers, Volunteer } from "@/lib/data";
 
 export default function VolunteersPage() {
-  const [volunteers, setVolunteers] = useState<Volunteer[]>(mockVolunteers);
   const [searchTerm, setSearchTerm] = useState("");
-  const [isRegisterOpen, setIsRegisterOpen] = useState(false);
   const [selectedVolunteer, setSelectedVolunteer] = useState<Volunteer | null>(null);
 
-  const filteredVolunteers = volunteers.filter(v => 
+  const filteredVolunteers = mockVolunteers.filter(v => 
     v.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
     v.role.toLowerCase().includes(searchTerm.toLowerCase())
   );
-
-  const handleRegister = (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    const formData = new FormData(e.currentTarget);
-    const newVol: Volunteer = {
-      id: Math.random().toString(36).substr(2, 9),
-      name: formData.get("name") as string,
-      email: formData.get("email") as string,
-      phone: formData.get("phone") as string,
-      role: formData.get("role") as string,
-      qrCode: `VOL-${Math.floor(1000 + Math.random() * 9000)}`,
-    };
-    setVolunteers([...volunteers, newVol]);
-    setIsRegisterOpen(false);
-  };
 
   return (
     <div className="space-y-6">
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
           <h2 className="text-3xl font-bold text-primary font-headline">Volunteers</h2>
-          <p className="text-muted-foreground">Manage and register event volunteers</p>
+          <p className="text-muted-foreground">View and manage the event volunteer roster</p>
         </div>
-        <Dialog open={isRegisterOpen} onOpenChange={setIsRegisterOpen}>
-          <DialogTrigger asChild>
-            <Button className="bg-primary hover:bg-primary/90">
-              <UserPlus className="mr-2 h-4 w-4" /> Register New Volunteer
-            </Button>
-          </DialogTrigger>
-          <DialogContent className="sm:max-w-[425px]">
-            <form onSubmit={handleRegister}>
-              <DialogHeader>
-                <DialogTitle>Register Volunteer</DialogTitle>
-                <DialogDescription>
-                  Enter details to generate a unique QR code for attendance.
-                </DialogDescription>
-              </DialogHeader>
-              <div className="grid gap-4 py-4">
-                <div className="grid gap-2">
-                  <Label htmlFor="name">Full Name</Label>
-                  <Input id="name" name="name" placeholder="John Doe" required />
-                </div>
-                <div className="grid gap-2">
-                  <Label htmlFor="email">Email</Label>
-                  <Input id="email" name="email" type="email" placeholder="john@example.com" required />
-                </div>
-                <div className="grid gap-2">
-                  <Label htmlFor="phone">Phone Number</Label>
-                  <Input id="phone" name="phone" placeholder="09XX-XXX-XXXX" required />
-                </div>
-                <div className="grid gap-2">
-                  <Label htmlFor="role">Role</Label>
-                  <Input id="role" name="role" placeholder="e.g. Security, Medical" required />
-                </div>
-              </div>
-              <DialogFooter>
-                <Button type="submit" className="w-full bg-primary">Create Profile & QR</Button>
-              </DialogFooter>
-            </form>
-          </DialogContent>
-        </Dialog>
+        <Button variant="outline">
+          <Download className="mr-2 h-4 w-4" /> Export Roster
+        </Button>
       </div>
 
       <Card className="border-none shadow-sm">
@@ -113,7 +55,7 @@ export default function VolunteersPage() {
           <div className="relative w-full max-w-sm">
             <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
             <Input
-              placeholder="Search volunteers..."
+              placeholder="Search volunteers by name or role..."
               className="pl-8"
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
@@ -154,6 +96,13 @@ export default function VolunteersPage() {
                     </TableCell>
                   </TableRow>
                 ))}
+                {filteredVolunteers.length === 0 && (
+                  <TableRow>
+                    <TableCell colSpan={5} className="text-center py-10 text-muted-foreground">
+                      No volunteers found matching your search.
+                    </TableCell>
+                  </TableRow>
+                )}
               </TableBody>
             </Table>
           </div>
@@ -170,7 +119,7 @@ export default function VolunteersPage() {
             </DialogDescription>
           </DialogHeader>
           <div className="p-8 bg-white rounded-xl shadow-inner my-4 flex items-center justify-center">
-            {/* Simple simulated QR code using a div pattern for visual appeal */}
+            {/* Simple simulated QR code pattern */}
             <div className="w-48 h-48 bg-black relative p-2">
               <div className="absolute top-2 left-2 w-12 h-12 border-4 border-white"></div>
               <div className="absolute top-2 right-2 w-12 h-12 border-4 border-white"></div>
@@ -184,7 +133,7 @@ export default function VolunteersPage() {
           </div>
           <div className="text-center space-y-1">
             <p className="font-bold text-lg font-headline">{selectedVolunteer?.qrCode}</p>
-            <p className="text-sm text-muted-foreground">Scan to check in or out</p>
+            <p className="text-sm text-muted-foreground">Scan at any gate to check in or out</p>
           </div>
           <DialogFooter className="w-full sm:justify-center gap-2">
             <Button variant="outline" className="flex-1">
