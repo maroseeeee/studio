@@ -106,8 +106,7 @@ export default function ScanningPage() {
     setIsProcessing(true);
     stopScanner();
 
-    // Mock processing logic for a clean state environment
-    // In a real app, this would query a database for the code
+    // Mock processing logic
     const isCheckIn = Math.random() > 0.5;
     
     const scanResult = {
@@ -119,7 +118,7 @@ export default function ScanningPage() {
     setLastScan(scanResult);
     toast({
       title: `Scan Successful: Check-${scanResult.type}`,
-      description: `${scanResult.name} (${code}) recorded successfully.`,
+      description: `${scanResult.name} recorded successfully.`,
     });
     
     setManualCode("");
@@ -235,7 +234,7 @@ export default function ScanningPage() {
             
             <div className="flex gap-2">
               <Input 
-                placeholder="Serial Number e.g. VOL-1001" 
+                placeholder="Serial Number" 
                 value={manualCode}
                 className="h-12 text-lg rounded-xl"
                 onChange={(e) => setManualCode(e.target.value)}
