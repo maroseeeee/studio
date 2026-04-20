@@ -1,18 +1,14 @@
 "use client";
 
+import { useState, useEffect } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { 
-  BarChart, 
-  Bar, 
-  XAxis, 
-  YAxis, 
-  CartesianGrid, 
-  Tooltip, 
-  ResponsiveContainer,
   PieChart,
   Pie,
-  Cell
+  Cell,
+  Tooltip,
+  ResponsiveContainer
 } from "recharts";
 import { Download, FileText, Share2, TrendingUp } from "lucide-react";
 
@@ -27,6 +23,16 @@ const roleData = [
 const COLORS = ["#991b1b", "#dc2626", "#f87171", "#7f1d1d", "#ef4444"];
 
 export default function ReportsPage() {
+  const [mounted, setMounted] = useState(false);
+  const [reportDate, setReportDate] = useState("");
+
+  useEffect(() => {
+    setMounted(true);
+    setReportDate(new Date().toLocaleDateString());
+  }, []);
+
+  if (!mounted) return null;
+
   return (
     <div className="space-y-6">
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
@@ -153,7 +159,7 @@ export default function ReportsPage() {
           </div>
           <div className="mt-8 pt-6 border-t">
             <p className="text-sm text-muted-foreground">
-              DalawScan Analytics generated on {new Date().toLocaleDateString()}. Data is refreshed every 5 minutes.
+              DalawScan Analytics generated on {reportDate}. Data is refreshed every 5 minutes.
             </p>
           </div>
         </Card>

@@ -1,7 +1,6 @@
-
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -32,6 +31,12 @@ import { mockVolunteers, Volunteer } from "@/lib/data";
 export default function VolunteersPage() {
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedVolunteer, setSelectedVolunteer] = useState<Volunteer | null>(null);
+  const [qrPattern, setQrPattern] = useState<boolean[]>([]);
+
+  useEffect(() => {
+    // Generate QR pattern only on client to avoid hydration mismatch
+    setQrPattern(Array.from({ length: 64 }, () => Math.random() > 0.5));
+  }, [selectedVolunteer]);
 
   const filteredVolunteers = mockVolunteers.filter(v => 
     v.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -109,7 +114,6 @@ export default function VolunteersPage() {
         </CardContent>
       </Card>
 
-      {/* QR Display Dialog */}
       <Dialog open={!!selectedVolunteer} onOpenChange={(open) => !open && setSelectedVolunteer(null)}>
         <DialogContent className="sm:max-w-md flex flex-col items-center">
           <DialogHeader className="text-center w-full">
@@ -119,14 +123,13 @@ export default function VolunteersPage() {
             </DialogDescription>
           </DialogHeader>
           <div className="p-8 bg-white rounded-xl shadow-inner my-4 flex items-center justify-center">
-            {/* Simple simulated QR code pattern */}
             <div className="w-48 h-48 bg-black relative p-2">
               <div className="absolute top-2 left-2 w-12 h-12 border-4 border-white"></div>
               <div className="absolute top-2 right-2 w-12 h-12 border-4 border-white"></div>
               <div className="absolute bottom-2 left-2 w-12 h-12 border-4 border-white"></div>
               <div className="grid grid-cols-8 grid-rows-8 gap-0.5 w-full h-full p-2">
-                 {Array.from({length: 64}).map((_, i) => (
-                   <div key={i} className={`bg-white ${Math.random() > 0.5 ? 'opacity-100' : 'opacity-0'}`}></div>
+                 {qrPattern.map((isActive, i) => (
+                   <div key={i} className={`bg-white ${isActive ? 'opacity-100' : 'opacity-0'}`}></div>
                  ))}
               </div>
             </div>
